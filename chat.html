@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Chat Realtime - Firebase</title>
+  <style>
+    body { font-family: system-ui, Arial; max-width:900px; margin:20px auto; }
+    #app { border:1px solid #ddd; border-radius:8px; padding:12px; }
+    #messages { height:400px; overflow:auto; border:1px solid #eee; padding:8px; margin-bottom:8px; background:#fafafa; }
+    .msg { padding:6px; margin-bottom:6px; border-radius:6px; }
+    .me { background:#e6ffea; text-align:right; }
+    .them { background:#fff; text-align:left; }
+    .meta { font-size:12px; color:#666; margin-bottom:4px; }
+    form { display:flex; gap:8px; }
+    input[type=text] { flex:1; padding:8px; font-size:16px; }
+    button { padding:8px 12px; }
+    #user-info { margin-bottom:8px; font-size:14px; }
+  </style>
+</head>
+<body>
+  <h2>Chat Realtime (Firestore)</h2>
+  <div id="app">
+    <div id="user-info">Kết nối...</div>
+    <div id="messages"></div>
+
+    <form id="sendForm">
+      <input id="messageInput" type="text" placeholder="Gõ tin nhắn..." autocomplete="off" />
+      <button id="sendBtn" type="submit">Gửi</button>
+      <button id="signoutBtn" type="button">Đăng xuất</button>
+    </form>
+  </div>
+
+  <!-- chạy file auth/chat dưới dạng module -->
+  <script type="module" src="./js/chat.js"></script>
+</body>
+</html>

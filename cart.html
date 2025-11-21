@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GearGen - My Shopping Cart</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    /* =======================
+   TOAST SIMPLE COLORS
+======================= */
+    #toast {
+      position: fixed;
+      bottom: 1rem;
+      right: 1rem;
+      min-width: 250px;
+      max-width: 350px;
+      z-index: 9999;
+      display: none;
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      font-family: sans-serif;
+    }
+
+    #toast-content {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      color: white;
+      font-size: 0.9rem;
+    }
+
+    /* Colors for types */
+    #toast-content.info {
+      background-color: #3b82f6;
+    }
+
+    /* blue */
+    #toast-content.success {
+      background-color: #16a34a;
+    }
+
+    /* green */
+    #toast-content.error {
+      background-color: #dc2626;
+    }
+
+    /* red */
+    #toast-content.warn {
+      background-color: #f59e0b;
+    }
+
+    /* yellow/orange */
+
+    #toast-icon {
+      font-size: 1.25rem;
+    }
+
+    #toast-title {
+      font-weight: 600;
+    }
+
+    #toast-message {
+      flex: 1;
+    }
+
+    #toast.show {
+      display: flex;
+      animation: slideIn 0.3s ease forwards;
+    }
+
+    #toast.hide {
+      animation: slideOut 0.3s ease forwards;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideOut {
+      from {
+        transform: translateY(0);
+        opacity: 1;
+      }
+
+      to {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+    }
+
+    /* =======================
+   CART ITEM HOVER EFFECT
+======================= */
+    .cart-item:hover {
+      background-color: #f3f4f6;
+      /* light gray */
+      transition: background-color 0.2s ease;
+    }
+
+    /* =======================
+   QUANTITY BUTTONS
+======================= */
+    .quantity-btn {
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .quantity-btn:hover {
+      background-color: #d1d5db;
+      /* gray-300 */
+    }
+
+    /* =======================
+   DELETE BUTTON
+======================= */
+    button[data-action="delete"] {
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    button[data-action="delete"]:hover {
+      color: #b91c1c;
+      /* dark red */
+    }
+
+    /* =======================
+   CHECKOUT BUTTON
+======================= */
+    #checkout-btn {
+      background-color: #2563eb;
+      /* blue-600 */
+      color: white;
+      font-weight: 600;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      transition: background-color 0.2s;
+    }
+
+    #checkout-btn:hover:not(:disabled) {
+      background-color: #1d4ed8;
+      /* blue-700 */
+    }
+
+    #checkout-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* =======================
+   DISCOUNT / SUMMARY ROWS
+======================= */
+    #discount-row {
+      color: #16a34a;
+      /* green for discount */
+      font-weight: 600;
+    }
+
+    #savings-display {
+      color: #16a34a;
+      font-weight: 600;
+    }
+
+    #shipping-cost {
+      font-weight: 600;
+    }
+  </style>
+
+
+</head>
+
+<body class="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 min-h-screen">
+
+  <!-- Hero Section with Modern Design -->
+  <header class="relative gradient-bg hero-pattern text-white overflow-hidden">
+    <!-- Background Image -->
+    <div class="absolute inset-0">
+      <img
+        src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=2340&q=80"
+        alt="Shopping Background" class="w-full h-full object-cover opacity-30">
+    </div>
+    <div class="absolute inset-0 bg-gradient-to-r from-blue-900/70 to-cyan-900/70"></div>
+
+    <!-- Floating Elements -->
+    <div class="absolute top-10 left-10 w-20 h-20 bg-white bg-opacity-10 rounded-full floating-animation"></div>
+    <div class="absolute top-32 right-20 w-16 h-16 bg-white bg-opacity-10 rounded-full floating-animation"
+      style="animation-delay: 1s;"></div>
+    <div class="absolute bottom-20 left-1/4 w-12 h-12 bg-white bg-opacity-10 rounded-full floating-animation"
+      style="animation-delay: 2s;"></div>
+
+    <div class="relative z-10 container mx-auto px-6 py-20 text-center">
+      <div class="animate-slide-up">
+        <div class="mb-8">
+          <div class="inline-block p-4 bg-white bg-opacity-20 rounded-3xl mb-4">
+            <img src="img/1.png" alt="GG Logo" class="w-16 h-16 mx-auto">
+          </div>
+        </div>
+
+        <h1 class="text-6xl md:text-7xl font-black mb-6 tracking-tight">
+          <span class="brand-gradient bg-clip-text text-transparent">GearGen</span>
+        </h1>
+
+        <p class="text-xl md:text-2xl mb-8 text-white text-opacity-90 max-w-2xl mx-auto leading-relaxed">
+          Explore the world of unlimited shopping with thousands of quality products </p>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation Bar -->
+  <nav class="sticky top-0 z-40 bg-white shadow-xl border-t-4 border-blue-600 w-full">
+    <div id="navbar-container" class="w-full"></div>
+  </nav>
+
+
+  <!-- Main Content -->
+  <main class="container mx-auto px-4 py-8">
+    <!-- Page Title -->
+    <div class="text-center mb-8 animate-slide-up">
+      <h2 class="text-3xl font-bold text-gray-800 mb-2">
+        <i class="fas fa-shopping-cart text-blue-600 mr-3"></i>
+        My Shopping Cart
+      </h2>
+      <p class="text-gray-600">Review your items and proceed to checkout</p>
+      <div class="mt-4">
+        <span id="cart-count"
+          class="inline-flex items-center bg-blue-100 text-blue-800 text-sm font-semibold px-3 py-1 rounded-full">
+          <button class="flex items-center space-x-1 bg-blue-100 text-blue-600 px-3 py-1 rounded-full">
+            <i class="fa fa-box"></i>
+            <span>Items</span>
+          </button>
+
+        </span>
+      </div>
+    </div>
+
+    <!-- Cart Content -->
+    <div class="grid lg:grid-cols-3 gap-8">
+      <!-- Cart Items -->
+      <div class="lg:col-span-2">
+        <div class="rounded-2xl shadow-xl p-6 mb-6">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-semibold text-gray-800 flex items-center">
+              <i class="fas fa-list-ul text-blue-600 mr-2"></i>
+              Cart Items
+            </h3>
+            <div class="flex gap-2">
+              <button id="select-all-btn" class="text-sm text-blue-600 hover:text-blue-800 font-medium">
+                <i class="fas fa-check-square mr-1"></i>
+                Select All
+              </button>
+              <button id="clear-cart-btn" class="text-sm text-red-600 hover:text-red-800 font-medium">
+                <i class="fas fa-trash mr-1"></i>
+                Clear Cart
+              </button>
+            </div>
+          </div>
+
+          <!-- Loading State -->
+          <div id="loading-state" class="text-center py-12">
+            <div class="loading-spinner mx-auto mb-4"></div>
+            <p class="text-gray-600">Loading your cart...</p>
+          </div>
+
+          <!-- Cart List -->
+          <div id="cart-list" class="p-4"></div>
+
+
+          <!-- Empty Cart State -->
+          <div id="empty-cart" class="text-center py-12 hidden">
+            <i class="fas fa-shopping-cart text-gray-300 text-6xl mb-4"></i>
+            <h4 class="text-xl font-semibold text-gray-600 mb-2">Your cart is empty</h4>
+            <p class="text-gray-500 mb-6">Add some amazing products to get started!</p>
+            <a href="./products.html"
+              class="inline-flex items-center bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition">
+              <i class="fas fa-arrow-left mr-2"></i>
+              Continue Shopping
+            </a>
+          </div>
+
+          <!-- Login Required State -->
+          <div id="login-required" class="text-center py-12 hidden">
+            <i class="fas fa-user-lock text-gray-300 text-6xl mb-4"></i>
+            <h4 class="text-xl font-semibold text-gray-600 mb-2">Please log in</h4>
+            <p class="text-gray-500 mb-6">You need to be logged in to view your cart</p>
+            <button id="login-btn"
+              class="inline-flex items-center bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition">
+              <i class="fas fa-sign-in-alt mr-2"></i>
+              Sign In
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cart Summary -->
+      <div class="lg:col-span-1">
+        <div class="glass-effect rounded-2xl shadow-xl p-6 sticky top-4">
+          <h3 class="text-xl font-semibold text-gray-800 mb-6 flex items-center">
+            <i class="fas fa-receipt text-green-600 mr-2"></i>
+            Order Summary
+            <div id="product-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+          </h3>
+
+          <!-- Promo Code Section -->
+          <div class="mb-6 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm font-medium text-yellow-800">Have a promo code?</span>
+              <i class="fas fa-tags text-yellow-600"></i>
+            </div>
+            <div class="flex gap-2">
+              <input type="text" id="promo-input" placeholder="Enter code"
+                class="flex-1 text-sm border border-yellow-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-500">
+              <!-- <input id="promo-input" type="text" placeholder="Enter promo code" class="border px-2 py-1 rounded" /> -->
+              <button id="apply-promo"
+                class="bg-yellow-600 text-white px-3 py-2 rounded-md hover:bg-yellow-700 transition text-sm">
+                Apply
+              </button>
+
+            </div>
+          </div>
+
+          <div class="space-y-4 mb-6">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600">Items (<span id="selected-count"> 0 </span>):</span>
+              <span id="subtotal" class="font-semibold text-gray-800">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600">Shipping:</span>
+              <div class="text-right">
+                <span id="shipping-cost" class="font-semibold text-green-600">Free</span>
+                <div class="text-xs text-gray-500">Orders over $50</div>
+              </div>
+            </div>
+            <div class="flex justify-between items-center" id="discount-row" style="display: none;">
+              <span class="text-gray-600">Discount:</span>
+              <span id="discount-amount" class="font-semibold text-green-600">-$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600">Tax (8%):</span>
+              <span id="tax" class="font-semibold text-gray-800">$0.00</span>
+            </div>
+            <hr class="border-gray-200">
+            <div class="flex justify-between items-center text-lg">
+              <span class="font-semibold text-gray-800">Total:</span>
+              <span id="cart-total" class="font-bold text-2xl text-green-600">$0.00</span>
+            </div>
+            <div id="savings-display" class="text-center text-sm text-green-600 font-medium" style="display: none;">
+              🎉 You saved <span id="total-savings">$0.00</span>!
+            </div>
+          </div>
+
+          <!-- Estimated Delivery -->
+          <div class="mb-6 p-3 bg-blue-50 rounded-lg">
+            <div class="flex items-center text-sm text-blue-800">
+              <i class="fas fa-truck mr-2"></i>
+              <span>Estimated delivery: <strong id="delivery-date"></strong></span>
+            </div>
+          </div>
+
+          <!-- Checkout Button -->
+          <button id="checkout-btn"
+            class="w-full checkout-btn text-white py-4 rounded-xl font-semibold text-lg disabled:opacity-50 disabled:cursor-not-allowed mb-4"
+            disabled>
+            <span id="checkout-text">
+              <i class="fas fa-credit-card mr-2"></i>
+              Proceed to Checkout
+            </span>
+            <div id="checkout-loading" class="hidden flex items-center justify-center">
+              <div class="loading-spinner mr-2"></div>
+              Processing...
+            </div>
+          </button>
+
+          <!-- Payment Methods -->
+          <div class="flex justify-center gap-3 mb-4">
+            <i class="fab fa-cc-visa text-2xl text-blue-600"></i>
+            <i class="fab fa-cc-mastercard text-2xl text-red-500"></i>
+            <i class="fab fa-paypal text-2xl text-blue-500"></i>
+            <i class="fab fa-apple-pay text-2xl text-gray-800"></i>
+          </div>
+
+          <!-- Security Badge -->
+          <div class="text-center">
+            <div class="inline-flex items-center text-sm text-gray-500">
+              <i class="fas fa-shield-alt text-green-500 mr-2"></i>
+              Secure Checkout
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="hidden fixed top-5 right-5 z-50">
+    <div id="toast-content" class="flex items-center p-4 rounded-lg shadow-md border">
+      <span id="toast-icon" class="mr-2"></span>
+      <div>
+        <p id="toast-title" class="font-bold"></p>
+        <p id="toast-message"></p>
+      </div>
+      <button onclick="document.getElementById('toast').classList.add('hidden')" class="ml-4">✖</button>
+    </div>
+  </div>
+
+    <df-messenger
+    intent="WELCOME"
+    chat-title="ChatbotShop"
+    agent-id="38b61413-6895-4ae0-963b-31c30129631e"
+    language-code="vi"
+  ></df-messenger>
+  <!-- Scripts -->
+  <script type="module" src="./js/cart.js"></script>
+  <script type="module" src="./js/navbar.js"></script>
+  <script type="module" src="./js/auth.js"></script>
+</body>
+
+</html>
